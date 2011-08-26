@@ -1,0 +1,18 @@
+[submodule "src/vendor/symfony/src/Symfony/Component/ClassLoader"]
+	path = src/vendor/symfony/src/Symfony/Component/ClassLoader
+	url = https://github.com/symfony/ClassLoader.git
+[submodule "src/vendor/doctrine-common"]
+	path = src/vendor/doctrine-common
+	url = https://github.com/doctrine/common.git
+[submodule "src/vendor/doctrine-orm"]
+	path = src/vendor/doctrine-orm
+	url = https://github.com/doctrine/doctrine2.git
+[submodule "src/vendor/doctrine-dbal"]
+	path = src/vendor/doctrine-dbal
+	url = https://github.com/doctrine/dbal.git
+[submodule "src/vendor/doctrine-mongodb"]
+	path = src/vendor/doctrine-mongodb
+	url = https://github.com/doctrine/mongodb.git
+[submodule "src/vendor/doctrine-mongodb-odm"]
+	path = src/vendor/doctrine-mongodb-odm
+	url = https://github.com/doctrine/mongodb-odm.git

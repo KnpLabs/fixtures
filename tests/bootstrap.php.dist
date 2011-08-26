@@ -1,0 +1,19 @@
+<?php
+
+$srcDirectory    = __DIR__.'/../src';
+$vendorDirectory = $srcDirectory.'/vendor';
+
+require_once $vendorDirectory.'/symfony/src/Symfony/Component/ClassLoader/UniversalClassLoader.php';
+
+use Symfony\Component\ClassLoader\UniversalClassLoader;
+
+$loader = new UniversalClassLoader();
+$loader->registerNamespaces(array(
+    'Fixtures'                  => $srcDirectory,
+    'Doctrine\\Common'          => $vendorDirectory.'/doctrine-common',
+    'Doctrine\\DBAL'            => $vendorDirectory.'/doctrine-dbal',
+    'Doctrine\\ORM'             => $vendorDirectory.'/doctrine-orm',
+    'Doctrine\\MongoDB'         => $vendorDirectory.'/doctrine-mongodb',
+    'Doctrine\\ODM\MongoDB'     => $vendorDirectory.'/doctrine-mongodb-odm',
+));
+$loader->register();
