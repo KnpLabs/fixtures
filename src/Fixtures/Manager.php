@@ -10,7 +10,7 @@ namespace Fixtures;
 class Manager
 {
     private $factories = array();
-    private $storages;
+    private $storages  = array();
 
     public function __construct()
     {
@@ -72,7 +72,7 @@ class Manager
             }
         }
 
-        throw new RuntimeException('There is no storage for the fixture.');
+        throw new \RuntimeException('There is no storage for the fixture.');
     }
 
     /**

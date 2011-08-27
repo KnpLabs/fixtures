@@ -17,4 +17,6 @@ interface Factory
      *
      *
      */
+
+    function create($values);
 }
