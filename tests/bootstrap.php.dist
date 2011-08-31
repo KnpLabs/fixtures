@@ -10,10 +10,10 @@ use Symfony\Component\ClassLoader\UniversalClassLoader;
 $loader = new UniversalClassLoader();
 $loader->registerNamespaces(array(
     'Fixtures'                  => $srcDirectory,
-    'Doctrine\\Common'          => $vendorDirectory.'/doctrine-common',
-    'Doctrine\\DBAL'            => $vendorDirectory.'/doctrine-dbal',
-    'Doctrine\\ORM'             => $vendorDirectory.'/doctrine-orm',
-    'Doctrine\\MongoDB'         => $vendorDirectory.'/doctrine-mongodb',
-    'Doctrine\\ODM\MongoDB'     => $vendorDirectory.'/doctrine-mongodb-odm',
+    'Doctrine\\Common'          => $vendorDirectory.'/doctrine-common/lib',
+    'Doctrine\\DBAL'            => $vendorDirectory.'/doctrine-dbal/lib',
+    'Doctrine\\ORM'             => $vendorDirectory.'/doctrine-orm/lib',
+    'Doctrine\\MongoDB'         => $vendorDirectory.'/doctrine-mongodb/lib',
+    'Doctrine\\ODM\MongoDB'     => $vendorDirectory.'/doctrine-mongodb-odm/lib',
 ));
 $loader->register();
