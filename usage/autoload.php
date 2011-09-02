@@ -17,3 +17,5 @@ $loader->registerNamespaces(array(
     'Doctrine\ORM'      => $vendorDir.'/doctrine-orm/lib',
 ));
 $loader->register();
+
+require_once __DIR__.'/Benchmark.php';

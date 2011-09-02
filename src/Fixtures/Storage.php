@@ -23,6 +23,15 @@ interface Storage
     function save($fixture);
 
     /**
+     * Saves all the given fixtures
+     *
+     * @param  array An array of fixture instances
+     *
+     * @return array The saved fixtures array
+     */
+    function saveAll(array $fixtures);
+
+    /**
      * Resets the storage, clearing all the data it contains
      *
      * @return void

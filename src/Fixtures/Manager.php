@@ -12,11 +12,6 @@ class Manager
     private $factories = array();
     private $storages  = array();
 
-    public function __construct()
-    {
-        $this->storages  = new \SplObjectStorage();
-    }
-
     /**
      * Creates a new fixture and saves it
      *
@@ -66,16 +61,23 @@ class Manager
      */
     public function save($fixture)
     {
-        foreach ($this->storages as $storage) {
-            if ($storage->supports($fixture)) {
-                return $storage->save($fixture);
-            }
+        return $this->getFixtureStorage($fixture)->save($fixture);
+    }
+
+    public function saveAll(array $fixtures)
+    {
+        // group the fixtures by storage
+        $fixturesByStorage = array();
+        foreach ($fixtures as $fixture) {
+            $storage      = $this->getFixtureStorage($fixture);
+            $storageIndex = array_search($storage, $this->storages, true);
+            $fixturesByStorage[$storageIndex][] = $fixture;
         }
 
-        throw new \RuntimeException(sprintf(
-            'There is no storage for the fixture (instance of %s).',
-            get_class($fixture)
-        ));
+        // save all the fixtures by storage
+        foreach ($fixturesByStorage as $storageIndex => $storageFixtures) {
+            $this->storages[$storageIndex]->saveAll($storageFixtures);
+        }
     }
 
     /**
@@ -112,6 +114,29 @@ class Manager
      */
     public function addStorage(Storage $storage)
     {
-        $this->storages->attach($storage);
+        $this->storages[] = $storage;
+    }
+
+    /**
+     * Returns the storage adapted to the given fixture
+     *
+     * @param  object $fixture The fixture instance
+     *
+     * @return Storage
+     *
+     * @throws RuntimeException if the storage was not found
+     */
+    private function getFixtureStorage($fixture)
+    {
+        foreach ($this->storages as $storage) {
+            if ($storage->supports($fixture)) {
+                return $storage;
+            }
+        }
+
+        throw new \RuntimeException(sprintf(
+            'There is no storage for the fixture (instance of %s).',
+            get_class($fixture)
+        ));
     }
 }

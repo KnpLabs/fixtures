@@ -53,6 +53,20 @@ class DoctrineEntityManager implements Storage
     /**
      * {@inheritDoc}
      */
+    public function saveAll(array $fixtures)
+    {
+        foreach ($fixtures as $fixture) {
+            $this->entityManager->persist($fixture);
+        }
+
+        $this->entityManager->flush();
+
+        return $fixtures;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function reset()
     {
         $classes = $this->getEntityClasses();
