@@ -5,6 +5,7 @@ namespace Fixtures\Storage;
 use Fixtures\Storage;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Internal\CommitOrderCalculator;
 
 /**
  * Doctrine entity manager based storage
@@ -30,7 +31,7 @@ class DoctrineEntityManager implements Storage
      */
     public function supports($fixture)
     {
-        return $this
+        return !$this
             ->entityManager
             ->getConfiguration()
             ->getMetadataDriverImpl()
@@ -71,7 +72,7 @@ class DoctrineEntityManager implements Storage
         return array_filter(
             $this->entityManager->getMetadataFactory()->getAllMetadata(),
             function ($metadata) {
-                return false === $metadata->isMappedSupperclass;
+                return false === $metadata->isMappedSuperclass;
             }
         );
     }
@@ -88,7 +89,7 @@ class DoctrineEntityManager implements Storage
         $tables = $this->getAssociationTables($classes);
 
         foreach ($this->getReverseCommitOrder($classes) as $class) {
-            $tables[] = $class->table;
+            $tables[] = $class->table['name'];
         }
 
         return $tables;
@@ -141,8 +142,14 @@ class DoctrineEntityManager implements Storage
     {
         $connection  = $this->entityManager->getConnection();
         $platform    = $connection->getDatabasePlatform();
-        $truncateSql = $platform->getTruncateTableSQL($table, true);
 
-        $connection->executeUpdate($truncateSql);
+        if ('mysql' === $platform->getName()) {
+            // TODO get rid of this hack
+            $connection->executeUpdate('DELETE FROM `' . $table . '`');
+            $connection->exec('ALTER TABLE `' . $table . '` AUTO_INCREMENT=0');
+        } else {
+            $truncateSql = $platform->getTruncateTableSQL($table, true);
+            $connection->executeUpdate($truncateSql);
+        }
     }
 }

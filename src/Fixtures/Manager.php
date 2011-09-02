@@ -72,7 +72,10 @@ class Manager
             }
         }
 
-        throw new \RuntimeException('There is no storage for the fixture.');
+        throw new \RuntimeException(sprintf(
+            'There is no storage for the fixture (instance of %s).',
+            get_class($fixture)
+        ));
     }
 
     /**

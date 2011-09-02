@@ -16,3 +16,6 @@
 [submodule "src/vendor/doctrine-mongodb-odm"]
 	path = src/vendor/doctrine-mongodb-odm
 	url = https://github.com/doctrine/mongodb-odm.git
+[submodule "src/vendor/symfony/src/Symfony/Component/Console"]
+	path = src/vendor/symfony/src/Symfony/Component/Console
+	url = https://github.com/symfony/Console.git
