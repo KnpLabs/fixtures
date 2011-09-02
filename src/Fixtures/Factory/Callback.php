@@ -3,7 +3,13 @@
 namespace Fixtures\Factory;
 
 use Fixtures\Factory;
+use Fixtures\ValueProvider;
 
+/**
+ * Callback based factory
+ *
+ * @author Antoine Hérault <antoine.herault@gmail.com>
+ */
 class Callback implements Factory
 {
     private $callback;
@@ -25,7 +31,7 @@ class Callback implements Factory
     /**
      * {@inheritDoc}
      */
-    public function create($values)
+    public function create(ValueProvider $values)
     {
         return call_user_func($this->callback, $values);
     }

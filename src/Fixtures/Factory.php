@@ -18,5 +18,5 @@ interface Factory
      *
      */
 
-    function create($values);
+    function create(ValueProvider $values);
 }
