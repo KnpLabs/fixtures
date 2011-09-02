@@ -23,11 +23,11 @@ class DoctrineEntityManagerTest extends \PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method('isTransient')
             ->with($this->equalTo('User'))
-            ->will($this->returnValue(true))
+            ->will($this->returnValue(false))
         ;
         $entityManager = $this->createEntityManager($mappingDriver);
         $storage = new DoctrineEntityManager($entityManager);
-        $this->assertTrue($storage->supports($user), '->supports() returns TRUE when the fixture\'s class is transient');
+        $this->assertTrue($storage->supports($user), '->supports() returns TRUE when the fixture\'s class is NOT transient');
 
 
         $mappingDriver = $this->getMock('Doctrine\ORM\Mapping\Driver\Driver');
@@ -35,11 +35,11 @@ class DoctrineEntityManagerTest extends \PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method('isTransient')
             ->with($this->equalTo('User'))
-            ->will($this->returnValue(false))
+            ->will($this->returnValue(true))
         ;
         $entityManager = $this->createEntityManager($mappingDriver);
         $storage = new DoctrineEntityManager($entityManager);
-        $this->assertFalse($storage->supports($user), '->supports() returns FALSE when the fixture\'s class is NOT transient');
+        $this->assertFalse($storage->supports($user), '->supports() returns FALSE when the fixture\'s class is transient');
     }
 
     public function testSave()
