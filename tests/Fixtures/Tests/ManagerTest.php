@@ -11,7 +11,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
         $fixture = new \stdClass();
         $savedFixture = new \stdClass();
 
-        $manager = $this->getMock('Fixtures\Manager', array('newInstance', 'save'));
+        $manager = $this->getMock('Fixtures\Manager', array('newInstance', 'saveCollection'));
         $manager
             ->expects($this->once())
             ->method('newInstance')
@@ -20,9 +20,10 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
         ;
         $manager
             ->expects($this->once())
-            ->method('save')
-            ->with($this->equalTo($fixture))
-            ->will($this->returnValue($savedFixture))
+            ->method('saveCollection')
+            ->will($this->returnCallback(function ($collection) use($savedFixture) {
+                $collection['main'] = $savedFixture;
+            }))
         ;
 
         $this->assertEquals($savedFixture, $manager->create('foo'), '->create() returns a new saved fixture');

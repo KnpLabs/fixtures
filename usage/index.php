@@ -24,16 +24,5 @@ $manager->addStorage(new Fixtures\Storage\DoctrineEntityManager($entityManager))
 
 echo $benchmark = new Benchmark(function () use ($manager) {
     $manager->reset();
-    for ($i = 0; $i < 10; $i++) {
-        $manager->create('article');
-    }
+    $manager->create('article');
 }, 10, true) . PHP_EOL;
-
-echo $benchmark = new Benchmark(function () use ($manager) {
-    $manager->reset();
-    for ($i = 0; $i < 10; $i++) {
-        $articles[] = $manager->newInstance('article');
-    }
-
-    $manager->saveAll($articles);
-}, 10, true);

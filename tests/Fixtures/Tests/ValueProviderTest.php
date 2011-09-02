@@ -119,5 +119,37 @@ class ValueProviderTest extends \PHPUnit_Framework_TestCase
             $user, $provider->getRelated('author', 'THE_USER_FACTORY'),
             '->getRelated() uses the @factory key of the value as factory name'
         );
+
+        $user = new \stdClass();
+        $manager = $this->getMock('Fixtures\Manager');
+        $manager
+            ->expects($this->once())
+            ->method('newInstance')
+            ->with(
+                $this->equalTo('THE_USER_FACTORY'),
+                $this->equalTo(array(
+                    'username'  => 'THE_USERNAME',
+                    'email'     => 'THE_EMAIL'
+                ))
+            )
+            ->will($this->returnValue($user))
+        ;
+        $collection = $this->getMock('Fixtures\Collection');
+        $collection
+            ->expects($this->once())
+            ->method('offsetSet')
+            ->with($this->anything(), $this->equalTo($user))
+        ;
+        $provider = new ValueProvider($manager, array(
+            'title'     => 'THE_TITLE',
+            'author'    => array(
+                'username'  => 'THE_USERNAME',
+                'email'     => 'THE_EMAIL'
+            )
+        ), $collection);
+        $this->assertEquals(
+            $user, $provider->getRelated('author', 'THE_USER_FACTORY'),
+            '->getRelated() adds a new fixture to the collection instead of create a fixture when a collection is configured'
+        );
     }
 }

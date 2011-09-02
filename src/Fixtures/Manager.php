@@ -15,14 +15,23 @@ class Manager
     /**
      * Creates a new fixture and saves it
      *
-     * @param  string $name
-     * @param  array  $values
+     * @param  string     $name
+     * @param  array      $values
+     * @param  Collection $collection
      *
      * @return object
      */
-    public function create($name, array $values = array())
+    public function create($name, array $values = array(), Collection $collection = null)
     {
-        return $this->save($this->newInstance($name, $values));
+        if (null === $collection) {
+            $collection = new Collection();
+        }
+
+        $collection['main'] = $this->newInstance($name, $values, $collection);
+
+        $this->saveCollection($collection);
+
+        return $collection['main'];
     }
 
     /**
@@ -45,9 +54,9 @@ class Manager
      *
      * @return object
      */
-    public function newInstance($name, array $values = array())
+    public function newInstance($name, array $values = array(), Collection $collection = null)
     {
-        $valueProvider = new ValueProvider($this, $values);
+        $valueProvider = new ValueProvider($this, $values, $collection);
 
         return $this->getFactory($name)->create($valueProvider);
     }
@@ -64,19 +73,24 @@ class Manager
         return $this->getFixtureStorage($fixture)->save($fixture);
     }
 
-    public function saveAll(array $fixtures)
+    /**
+     * Saves the given collection
+     *
+     * @param  Collection $collection
+     */
+    public function saveCollection(Collection $collection)
     {
-        // group the fixtures by storage
         $fixturesByStorage = array();
-        foreach ($fixtures as $fixture) {
-            $storage      = $this->getFixtureStorage($fixture);
-            $storageIndex = array_search($storage, $this->storages, true);
-            $fixturesByStorage[$storageIndex][] = $fixture;
+        foreach ($collection as $fixture) {
+            $storage = $this->getFixtureStorage($fixture);
+            $storageIndex = array_search($storage, $this->storages);
+            $storages[$storageIndex][] = $fixture;
         }
 
-        // save all the fixtures by storage
-        foreach ($fixturesByStorage as $storageIndex => $storageFixtures) {
-            $this->storages[$storageIndex]->saveAll($storageFixtures);
+        foreach ($storages as $storageIndex => $fixtures) {
+            $storageCollection = new Collection($fixtures);
+            $storage->saveCollection($storageCollection);
+            $collection->merge($storageCollection);
         }
     }
 

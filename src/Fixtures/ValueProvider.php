@@ -11,17 +11,20 @@ class ValueProvider
 {
     private $manager;
     private $values;
+    private $collection;
 
     /**
      * Constructor
      *
-     * @param  Manager $manager
-     * @param  array   $values
+     * @param  Manager    $manager
+     * @param  array      $values
+     * @param  Collection $collection An optional Collection instance
      */
-    public function __construct(Manager $manager, array $values)
+    public function __construct(Manager $manager, array $values, Collection $collection = null)
     {
-        $this->manager = $manager;
-        $this->values  = $values;
+        $this->manager    = $manager;
+        $this->values     = $values;
+        $this->collection = $collection;
     }
 
     public function get($name, $default = null)
@@ -54,7 +57,14 @@ class ValueProvider
             return null;
         }
 
-        return $this->manager->create($factoryName, $value);
+        if (null === $this->collection) {
+            return $this->manager->create($factoryName, $value);
+        } else {
+            $fixture = $this->manager->newInstance($factoryName, $value, $this->collection);
+            $this->collection[] = $fixture;
+
+            return $fixture;
+        }
     }
 
     public function has($name)
