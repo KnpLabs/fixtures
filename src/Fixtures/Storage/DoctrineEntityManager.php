@@ -3,7 +3,7 @@
 namespace Fixtures\Storage;
 
 use Fixtures\Storage;
-use Fixtures\Collection;
+use Fixtures\Bag;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Internal\CommitOrderCalculator;
@@ -54,7 +54,7 @@ class DoctrineEntityManager implements Storage
     /**
      * {@inheritDoc}
      */
-    public function saveCollection(Collection $collection)
+    public function saveBag(Bag $collection)
     {
         foreach ($collection as $fixture) {
             $this->entityManager->persist($fixture);

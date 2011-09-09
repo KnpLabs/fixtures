@@ -2,14 +2,14 @@
 
 namespace Fixtures\Tests;
 
-use Fixtures\Collection;
+use Fixtures\Bag;
 
-class CollectionTest extends \PHPUnit_Framework_TestCase
+class BagTest extends \PHPUnit_Framework_TestCase
 {
     public function testArrayAccess()
     {
-        $collection = new Collection();
-        $this->assertInstanceOf('ArrayAccess', $collection, 'Collection implements the ArrayAccess interface');
+        $bag = new Bag();
+        $this->assertInstanceOf('ArrayAccess', $bag, 'Bag implements the ArrayAccess interface');
     }
 
     /**
@@ -17,8 +17,8 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testOffsetSetWithANonObjectValue()
     {
-        $collection = new Collection();
-        $collection->offsetSet('foo', 'bar');
+        $bag = new Bag();
+        $bag->offsetSet('foo', 'bar');
     }
 
     /**
@@ -26,14 +26,14 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testConstructWithANonObjectValue()
     {
-        $collection = new Collection(array('foo' => 'bar'));
+        $bag = new Bag(array('foo' => 'bar'));
     }
 
     public function testToArray()
     {
         $fixtures = array(new \stdClass(), new \stdClass());
-        $collection = new Collection($fixtures);
-        $this->assertEquals($fixtures, $collection->toArray(), '->toArray() returns the underlying array');
+        $bag = new Bag($fixtures);
+        $this->assertEquals($fixtures, $bag->toArray(), '->toArray() returns the underlying array');
     }
 
     /**
@@ -41,10 +41,10 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testMerge($firtsArray, $secondArray, $expectedArray, $message)
     {
-        $firstCollection = new Collection($firtsArray);
-        $secondCollection = new Collection($secondArray);
-        $firstCollection->merge($secondCollection);
-        $this->assertEquals($expectedArray, $firstCollection->toArray(), $message);
+        $firstBag = new Bag($firtsArray);
+        $secondBag = new Bag($secondArray);
+        $firstBag->merge($secondBag);
+        $this->assertEquals($expectedArray, $firstBag->toArray(), $message);
     }
 
     public function dataForMergeTest()
@@ -83,14 +83,14 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
         $bar = new \stdClass();
         $baz = new \stdClass();
 
-        $collection = new Collection(array('foo' => $foo, 'bar' => $bar));
-        $collection->replace($foo, $baz);
-        $this->assertEquals(array('foo' => $baz, 'bar' => $bar), $collection->toArray(), '->replace() replaces the given fixture by the other given one');
+        $bag = new Bag(array('foo' => $foo, 'bar' => $bar));
+        $bag->replace($foo, $baz);
+        $this->assertEquals(array('foo' => $baz, 'bar' => $bar), $bag->toArray(), '->replace() replaces the given fixture by the other given one');
 
-        $collection = new Collection(array('foo' => $foo));
-        $message = '->replace() throws an InvalidArgumentException when the given fixture to replace is not in the collection';
+        $bag = new Bag(array('foo' => $foo));
+        $message = '->replace() throws an InvalidArgumentException when the given fixture to replace is not in the bag';
         try {
-            $collection->replace($bar, $baz);
+            $bag->replace($bar, $baz);
             $this->fail($message);
         } catch (\InvalidArgumentException $e) {
             $this->anything($message);

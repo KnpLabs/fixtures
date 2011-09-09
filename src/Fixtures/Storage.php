@@ -23,11 +23,11 @@ interface Storage
     function save($fixture);
 
     /**
-     * Saves the given fixtures collection
+     * Saves the given fixtures bag
      *
-     * @param  Collection A fixtures collection
+     * @param  Bag A fixtures bag
      */
-    function saveCollection(Collection $collection);
+    function saveBag(Bag $bag);
 
     /**
      * Resets the storage, clearing all the data it contains

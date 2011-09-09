@@ -3,11 +3,11 @@
 namespace Fixtures;
 
 /**
- * Fixture collection
+ * Fixtures bag
  *
  * @author Antoine Hérault <antoine.herault@gmail.com>
  */
-class Collection implements \ArrayAccess, \IteratorAggregate
+class Bag implements \ArrayAccess, \IteratorAggregate
 {
     private $fixtures;
 
@@ -28,13 +28,13 @@ class Collection implements \ArrayAccess, \IteratorAggregate
     }
 
     /**
-     * Merges the given collection into this one
+     * Merges the given bag into this one
      *
-     * @param  Collection $collection
+     * @param  Bag $bag
      */
-    public function merge(Collection $collection)
+    public function merge(Bag $bag)
     {
-        foreach ($collection as $key => $fixture) {
+        foreach ($bag as $key => $fixture) {
             $this->fixtures[$key] = $fixture;
         }
     }
@@ -50,7 +50,7 @@ class Collection implements \ArrayAccess, \IteratorAggregate
         $key = array_search($oldFixture, $this->fixtures, true);
 
         if (false === $key) {
-            throw new \InvalidArgumentException('The $oldFixture was not found in the collection.');
+            throw new \InvalidArgumentException('The $oldFixture was not found in the bag.');
         }
 
         $this->fixtures[$key] = $newFixture;

@@ -15,23 +15,23 @@ class Manager
     /**
      * Creates a new fixture and saves it
      *
-     * @param  string     $name
-     * @param  array      $values
-     * @param  Collection $collection
+     * @param  string $name
+     * @param  array  $values
+     * @param  Bag    $bag
      *
      * @return object
      */
-    public function create($name, array $values = array(), Collection $collection = null)
+    public function create($name, array $values = array(), Bag $bag = null)
     {
-        if (null === $collection) {
-            $collection = new Collection();
+        if (null === $bag) {
+            $bag = new Bag();
         }
 
-        $collection['main'] = $this->newInstance($name, $values, $collection);
+        $bag['main'] = $this->newInstance($name, $values, $bag);
 
-        $this->saveCollection($collection);
+        $this->saveBag($bag);
 
-        return $collection['main'];
+        return $bag['main'];
     }
 
     /**
@@ -51,12 +51,17 @@ class Manager
      *
      * @param  string $name
      * @param  array  $values
+     * @param  Bag    $bag
      *
      * @return object
      */
-    public function newInstance($name, array $values = array(), Collection $collection = null)
+    public function newInstance($name, array $values = array(), Bag $bag = null)
     {
-        $valueProvider = new ValueProvider($this, $values, $collection);
+        if (null === $bag) {
+            $bag = new Bag();
+        }
+
+        $valueProvider = new ValueProvider($this, $values, $bag);
 
         return $this->getFactory($name)->create($valueProvider);
     }
@@ -74,23 +79,23 @@ class Manager
     }
 
     /**
-     * Saves the given collection
+     * Saves the given bag
      *
-     * @param  Collection $collection
+     * @param  Bag $bag
      */
-    public function saveCollection(Collection $collection)
+    public function saveBag(Bag $bag)
     {
         $fixturesByStorage = array();
-        foreach ($collection as $fixture) {
+        foreach ($bag as $fixture) {
             $storage = $this->getFixtureStorage($fixture);
             $storageIndex = array_search($storage, $this->storages);
             $storages[$storageIndex][] = $fixture;
         }
 
         foreach ($storages as $storageIndex => $fixtures) {
-            $storageCollection = new Collection($fixtures);
-            $storage->saveCollection($storageCollection);
-            $collection->merge($storageCollection);
+            $storageBag = new Bag($fixtures);
+            $storage->saveBag($storageBag);
+            $bag->merge($storageBag);
         }
     }
 

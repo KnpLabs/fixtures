@@ -134,7 +134,7 @@ class ValueProviderTest extends \PHPUnit_Framework_TestCase
             )
             ->will($this->returnValue($user))
         ;
-        $collection = $this->getMock('Fixtures\Collection');
+        $collection = $this->getMock('Fixtures\Bag');
         $collection
             ->expects($this->once())
             ->method('offsetSet')
