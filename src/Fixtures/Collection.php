@@ -27,6 +27,11 @@ class Collection implements \ArrayAccess, \IteratorAggregate
         $this->fixtures = $fixtures;
     }
 
+    /**
+     * Merges the given collection into this one
+     *
+     * @param  Collection $collection
+     */
     public function merge(Collection $collection)
     {
         foreach ($collection as $key => $fixture) {
@@ -34,6 +39,12 @@ class Collection implements \ArrayAccess, \IteratorAggregate
         }
     }
 
+    /**
+     * Replaces the given $oldFixture by the $newFixture
+     *
+     * @param  object $oldFixture
+     * @param  object $newFixture
+     */
     public function replace($oldFixture, $newFixture)
     {
         $key = array_search($oldFixture, $this->fixtures, true);
@@ -55,11 +66,17 @@ class Collection implements \ArrayAccess, \IteratorAggregate
         return $this->fixtures;
     }
 
+    /**
+     * @see ArrayAccess::offsetExists()
+     */
     public function offsetExists($offset)
     {
         return array_key_exists($offset, $this->fixtures);
     }
 
+    /**
+     * @see ArrayAccess::offsetSet()
+     */
     public function offsetSet($offset, $value)
     {
         if (!is_object($value)) {
@@ -69,16 +86,25 @@ class Collection implements \ArrayAccess, \IteratorAggregate
         $this->fixtures[$offset] = $value;
     }
 
+    /**
+     * @see ArrayAccess::offsetGet()
+     */
     public function offsetGet($offset)
     {
         return $this->fixtures[$offset];
     }
 
+    /**
+     * @see ArrayAccess::offsetUnset()
+     */
     public function offsetUnset($offset)
     {
         unset($this->fixtures[$offset]);
     }
 
+    /**
+     * @see IteratorAggregate::getIterator()
+     */
     public function getIterator()
     {
         return new \ArrayIterator($this->fixtures);
