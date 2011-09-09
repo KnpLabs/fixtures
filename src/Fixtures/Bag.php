@@ -7,24 +7,86 @@ namespace Fixtures;
  *
  * @author Antoine Hérault <antoine.herault@gmail.com>
  */
-class Bag implements \ArrayAccess, \IteratorAggregate
+class Bag implements \Countable, \IteratorAggregate
 {
-    private $fixtures;
+    private $fixtures = array();
 
     /**
      * Constructor
      *
-     * @param  array An array of fixture instances
+     * @param  array $fixtures
      */
     public function __construct(array $fixtures = array())
     {
         foreach ($fixtures as $fixture) {
-            if (!is_object($fixture)) {
-                throw new \InvalidArgumentException('All the $fixtures must be objects.');
-            }
+            $this->add($fixture);
+        }
+    }
+
+    /**
+     * Adds the given fixture
+     *
+     * @param  object $fixture
+     */
+    public function add($fixture)
+    {
+        if (!is_object($fixture)) {
+            throw new \InvalidArgumentException(sprintf(
+                'The $fixture must be an object, %s given.',
+                gettype($fixture)
+            ));
         }
 
-        $this->fixtures = $fixtures;
+        $this->fixtures[] = $fixture;
+    }
+
+    /**
+     * Adds the given fixtures
+     *
+     * @param  array $fixtures
+     */
+    public function addCollection(array $fixtures)
+    {
+        foreach ($fixtures as $fixture) {
+            $this->push($fixture);
+        }
+    }
+
+    /**
+     * Returns the last fixture
+     *
+     * @return object
+     */
+    public function getLast()
+    {
+        return end($this->fixtures);
+    }
+
+    /**
+     * Returns the $number latest fixtures
+     *
+     * @return array
+     */
+    public function getLatest($number)
+    {
+        if (!is_int($number)) {
+            throw new \InvalidArgumentException(sprintf(
+                'The $number must be an integer, %s given',
+                gettype($number)
+            ));
+        } elseif ($number < 1) {
+            throw new \InvalidArgumentException(sprintf(
+                'The $number must be greater than or equal to one, %d given.',
+                $number
+            ));
+        } elseif ($number > $this->count()) {
+            throw new \InvalidArgumentException(sprintf(
+                'You requested the %d latest but the bag contains only %d fixture(s).',
+                $number, $this->count()
+            ));
+        }
+
+        return array_slice($this->fixtures, -$number);
     }
 
     /**
@@ -57,49 +119,11 @@ class Bag implements \ArrayAccess, \IteratorAggregate
     }
 
     /**
-     * Returns the underlying array
-     *
-     * @return array
+     * @see Countable::count()
      */
-    public function toArray()
+    public function count()
     {
-        return $this->fixtures;
-    }
-
-    /**
-     * @see ArrayAccess::offsetExists()
-     */
-    public function offsetExists($offset)
-    {
-        return array_key_exists($offset, $this->fixtures);
-    }
-
-    /**
-     * @see ArrayAccess::offsetSet()
-     */
-    public function offsetSet($offset, $value)
-    {
-        if (!is_object($value)) {
-            throw new \InvalidArgumentException('The $value must be an object.');
-        }
-
-        $this->fixtures[$offset] = $value;
-    }
-
-    /**
-     * @see ArrayAccess::offsetGet()
-     */
-    public function offsetGet($offset)
-    {
-        return $this->fixtures[$offset];
-    }
-
-    /**
-     * @see ArrayAccess::offsetUnset()
-     */
-    public function offsetUnset($offset)
-    {
-        unset($this->fixtures[$offset]);
+        return count($this->fixtures);
     }
 
     /**
