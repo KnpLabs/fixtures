@@ -124,6 +124,10 @@ class Manager
      */
     public function save($fixture)
     {
+        if (!is_object($fixture)) {
+            throw new \InvalidArgumentException('The $fixture must be an object.');
+        }
+
         return $this->getFixtureStorage($fixture)->save($fixture);
     }
 

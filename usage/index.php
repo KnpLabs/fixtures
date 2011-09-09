@@ -20,9 +20,7 @@ $manager->setFactory('article', new Fixtures\Factory\Callback(function ($values)
 
     return $article;
 }));
-$manager->addStorage(new Fixtures\Storage\DoctrineEntityManager($entityManager));
+$manager->addStorage(new Fixtures\Storage\Doctrine\ORM($entityManager));
 
-echo $benchmark = new Benchmark(function () use ($manager) {
-    $manager->reset();
-    $manager->create('article');
-}, 10, true) . PHP_EOL;
+$manager->reset();
+$manager->create('article');

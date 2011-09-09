@@ -1,66 +1,26 @@
 <?php
 
-namespace Fixtures\Storage;
+namespace Fixtures\Storage\Doctrine;
 
-use Fixtures\Storage;
-use Fixtures\Bag;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Internal\CommitOrderCalculator;
 
 /**
- * Doctrine entity manager based storage
+ * Storage based on a Doctrine ORM entity manager
  *
  * @author Antoine Hérault <antoine.herault@gmail.com>
  */
-class DoctrineEntityManager implements Storage
+class ORM extends Base
 {
-    private $entityManager;
-
     /**
      * Constructor
      *
-     * @param  EntityManager $entityManager
+     * @param  EntityManager $manager
      */
-    public function __construct(EntityManager $entityManager)
+    public function __construct(EntityManager $manager)
     {
-        $this->entityManager = $entityManager;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function supports($fixture)
-    {
-        return !$this
-            ->entityManager
-            ->getConfiguration()
-            ->getMetadataDriverImpl()
-            ->isTransient(get_class($fixture))
-        ;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function save($fixture)
-    {
-        $this->entityManager->persist($fixture);
-        $this->entityManager->flush();
-
-        return $fixture;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function saveBag(Bag $collection)
-    {
-        foreach ($collection as $fixture) {
-            $this->entityManager->persist($fixture);
-        }
-
-        $this->entityManager->flush();
+        $this->setManager($manager);
     }
 
     /**
@@ -83,7 +43,7 @@ class DoctrineEntityManager implements Storage
     private function getEntityClasses()
     {
         return array_filter(
-            $this->entityManager->getMetadataFactory()->getAllMetadata(),
+            $this->getAllMetadata(),
             function ($metadata) {
                 return false === $metadata->isMappedSuperclass;
             }
@@ -153,7 +113,7 @@ class DoctrineEntityManager implements Storage
      */
     private function truncateTable($table)
     {
-        $connection  = $this->entityManager->getConnection();
+        $connection  = $this->getManager()->getConnection();
         $platform    = $connection->getDatabasePlatform();
 
         if ('mysql' === $platform->getName()) {
