@@ -11,27 +11,41 @@ class ValueProvider
 {
     private $manager;
     private $values;
-    private $collection;
+    private $bag;
 
     /**
      * Constructor
      *
-     * @param  Manager    $manager
-     * @param  array      $values
-     * @param  Collection $collection An optional Collection instance
+     * @param  Manager $manager A Manager Instance
+     * @param  array   $values  The values
+     * @param  Bag     $bag     An optional Bag instance
      */
-    public function __construct(Manager $manager, array $values, Collection $collection = null)
+    public function __construct(Manager $manager, array $values, Bag $bag = null)
     {
-        $this->manager    = $manager;
-        $this->values     = $values;
-        $this->collection = $collection;
+        $this->manager = $manager;
+        $this->values  = $values;
+        $this->bag     = $bag;
     }
 
+    /**
+     * Returns the specified value
+     *
+     * @param  string $name
+     * @param  mixed  $default
+     *
+     * @return mixed
+     */
     public function get($name, $default = null)
     {
         return $this->has($name) ? $this->values[$name] : $default;
     }
 
+    /**
+     * Returns the specified relation values
+     *
+     * @param  string $name
+     * @param  string $factoryName
+     */
     public function getRelated($name, $factoryName = null)
     {
         $value = $this->get($name, array());
@@ -57,16 +71,23 @@ class ValueProvider
             return null;
         }
 
-        if (null === $this->collection) {
+        if (null === $this->bag) {
             return $this->manager->create($factoryName, $value);
         } else {
-            $fixture = $this->manager->newInstance($factoryName, $value, $this->collection);
-            $this->collection[] = $fixture;
+            $fixture = $this->manager->newInstance($factoryName, $value, $this->bag);
+            $this->bag[] = $fixture;
 
             return $fixture;
         }
     }
 
+    /**
+     * Indicates whether the specified value exists
+     *
+     * @param  string $name
+     *
+     * @return Boolean
+     */
     public function has($name)
     {
         return array_key_exists($name, $this->values);
