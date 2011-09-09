@@ -2,6 +2,8 @@
 
 namespace Fixtures;
 
+use Fixtures\ValueProvider\Simple;
+
 /**
  * The fixtures manager
  *
@@ -35,6 +37,24 @@ class Manager
     }
 
     /**
+     * Creates a collection of new fixtures and saves it
+     *
+     * @param  string $name
+     * @param  array  $values
+     * @param  Bag    $bag
+     *
+     * @return object
+     */
+    public function createCollection($size, $name, array $values, Bag $bag = null)
+    {
+        $fixtures = $this->newCollectionInstance($size, $name, $values, $bag);
+
+        $this->saveBag($bag);
+
+        return $fixtures;
+    }
+
+    /**
      * Resets all the storages
      *
      * @return void
@@ -49,21 +69,50 @@ class Manager
     /**
      * Creates a new fixture instance
      *
-     * @param  string $name
-     * @param  array  $values
-     * @param  Bag    $bag
+     * @param  string              $name
+     * @param  array|ValueProvider $values
+     * @param  Bag                 $bag
      *
      * @return object
      */
-    public function newInstance($name, array $values = array(), Bag $bag = null)
+    public function newInstance($name, $values = array(), Bag $bag = null)
     {
         if (null === $bag) {
             $bag = new Bag();
         }
 
-        $valueProvider = new ValueProvider($this, $values, $bag);
+        if ($values instanceof ValueProvider) {
+            $valueProvider = $values;
+        } elseif (is_array($values)) {
+            $valueProvider = new Simple($this, $values, $bag);
+        } else {
+            throw new \InvalidArgumentException('The $values must be either an array or a ValueProvider instance.');
+        }
 
         return $this->getFactory($name)->create($valueProvider);
+    }
+
+    public function newInstanceCollection($size, $name, $values = null, Bag $bag = null)
+    {
+        $size = intval($size);
+
+        if ($size < 1) {
+            throw new \InvalidArgumentException('The $size must an integer greater than or equal to one.');
+        }
+
+        if ($values instanceof ValueProvider) {
+            $values = $values->all();
+        }
+
+        $values = new SequenceValues($values);
+
+        $fixtures = array();
+        for ($i = 0; $i < $size; $i++) {
+            $values->setIndex($i);
+            $fixtures[] = $this->newInstance($name, $values, $bag);
+        }
+
+        return $fixtures;
     }
 
     /**
