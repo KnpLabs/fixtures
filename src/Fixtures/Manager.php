@@ -2,8 +2,6 @@
 
 namespace Fixtures;
 
-use Fixtures\ValueProvider\Simple;
-
 /**
  * The fixtures manager
  *
@@ -26,14 +24,14 @@ class Manager
     public function create($name, array $values = array(), Bag $bag = null)
     {
         if (null === $bag) {
-            $bag = new Bag();
+            $bag = $this->createBag();
         }
 
-        $bag['main'] = $this->newInstance($name, $values, $bag);
+        $bag->add($this->newInstance($name, $values, $bag));
 
         $this->saveBag($bag);
 
-        return $bag['main'];
+        return $bag->last();
     }
 
     /**
@@ -47,11 +45,11 @@ class Manager
      */
     public function createCollection($size, $name, array $values, Bag $bag = null)
     {
-        $fixtures = $this->newCollectionInstance($size, $name, $values, $bag);
+        $bag->addCollection($this->newCollectionInstance($size, $name, $values, $bag));
 
         $this->saveBag($bag);
 
-        return $fixtures;
+        return $bag->latest($size);
     }
 
     /**
@@ -78,13 +76,13 @@ class Manager
     public function newInstance($name, $values = array(), Bag $bag = null)
     {
         if (null === $bag) {
-            $bag = new Bag();
+            $bag = $this->createBag();
         }
 
         if ($values instanceof ValueProvider) {
             $valueProvider = $values;
         } elseif (is_array($values)) {
-            $valueProvider = new Simple($this, $values, $bag);
+            $valueProvider = new ValueProvider\Simple($this, $values, $bag);
         } else {
             throw new \InvalidArgumentException('The $values must be either an array or a ValueProvider instance.');
         }
@@ -104,7 +102,11 @@ class Manager
             $values = $values->all();
         }
 
-        $values = new SequenceValues($values);
+        if (null === $bag) {
+            $bag = $this->createBag();
+        }
+
+        $values = new ValueProvider\Collection($values);
 
         $fixtures = array();
         for ($i = 0; $i < $size; $i++) {
@@ -138,17 +140,13 @@ class Manager
      */
     public function saveBag(Bag $bag)
     {
-        $fixturesByStorage = array();
+        $storages = array();
         foreach ($bag as $fixture) {
-            $storage = $this->getFixtureStorage($fixture);
-            $storageIndex = array_search($storage, $this->storages);
-            $storages[$storageIndex][] = $fixture;
+            $storages[] = $this->getFixtureStorage($fixture);
         }
 
-        foreach ($storages as $storageIndex => $fixtures) {
-            $storageBag = new Bag($fixtures);
-            $storage->saveBag($storageBag);
-            $bag->merge($storageBag);
+        foreach (array_unique($storages, SORT_REGULAR) as $storage) {
+            $storage->saveBag(new Bag\Fixed(new Bag\Storage($bag, $storage)));
         }
     }
 
@@ -210,5 +208,10 @@ class Manager
             'There is no storage for the fixture (instance of %s).',
             get_class($fixture)
         ));
+    }
+
+    private function createBag(array $fixtures = array())
+    {
+        return new Bag\Simple($fixtures);
     }
 }

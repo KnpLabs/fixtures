@@ -9,7 +9,7 @@ class ValueProviderTest extends \PHPUnit_Framework_TestCase
     public function testGet()
     {
         $manager  = $this->getMock('Fixtures\Manager');
-        $bag      = $this->getMock('Fixtures\Bag');
+        $bag      = $this->getMock('Fixtures\Bag\Simple');
         $provider = new Simple($manager, array(
             'username'  => 'THE_USERNAME',
             'email'     => null,
@@ -50,7 +50,7 @@ class ValueProviderTest extends \PHPUnit_Framework_TestCase
     {
         $related = new \stdClass();
         $manager = $this->getMock('Fixtures\Manager');
-        $bag     = $this->getMock('Fixtures\Bag');
+        $bag     = $this->getMock('Fixtures\Bag\Simple');
         $manager
             ->expects($this->once())
             ->method('newInstance')
@@ -59,8 +59,8 @@ class ValueProviderTest extends \PHPUnit_Framework_TestCase
         ;
         $bag
             ->expects($this->once())
-            ->method('offsetSet')
-            ->with($this->equalTo(null), $this->equalTo($related))
+            ->method('add')
+            ->with($this->equalTo($related))
         ;
         $provider = new Simple($manager, array('foo' => array('bar' => 'Bar', 'baz' => 'Baz')), $bag);
         $this->assertEquals($related, $provider->getRelated('foo', 'FACTORY'), '->getRelated() creates a new related fixture');

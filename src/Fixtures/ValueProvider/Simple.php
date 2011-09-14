@@ -72,7 +72,7 @@ class Simple implements ValueProvider
 
         $fixture = $this->manager->newInstance($factoryName, $value, $this->bag);
 
-        $this->bag[] = $fixture;
+        $this->bag->add($fixture);
 
         return $fixture;
     }

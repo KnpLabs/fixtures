@@ -3,103 +3,55 @@
 namespace Fixtures;
 
 /**
- * Fixtures bag
+ * Interface for the fixture collection classes
  *
  * @author Antoine Hérault <antoine.herault@gmail.com>
  */
-class Bag implements \Countable, \IteratorAggregate
+interface Bag extends \Countable, \IteratorAggregate
 {
-    private $fixtures = array();
-
-    /**
-     * Constructor
-     *
-     * @param  array $fixtures
-     */
-    public function __construct(array $fixtures = array())
-    {
-        foreach ($fixtures as $fixture) {
-            $this->add($fixture);
-        }
-    }
-
     /**
      * Adds the given fixture
      *
      * @param  object $fixture
      */
-    public function add($fixture)
-    {
-        if (!is_object($fixture)) {
-            throw new \InvalidArgumentException(sprintf(
-                'The $fixture must be an object, %s given.',
-                gettype($fixture)
-            ));
-        }
-
-        $this->fixtures[] = $fixture;
-    }
+    function add($fixture);
 
     /**
-     * Adds the given fixtures
+     * Adds all the given fixtures
      *
      * @param  array $fixtures
      */
-    public function addCollection(array $fixtures)
-    {
-        foreach ($fixtures as $fixture) {
-            $this->push($fixture);
-        }
-    }
+    function addCollection(array $fixtures);
+
+    /**
+     * Indicates whether the specified fixture is in the bag
+     *
+     * @param  object $fixture
+     */
+    function contains($fixture);
+
+    /**
+     * Returns all the fixtures
+     *
+     * @return array
+     */
+    function all();
 
     /**
      * Returns the last fixture
      *
      * @return object
      */
-    public function getLast()
-    {
-        return end($this->fixtures);
-    }
+    function last();
 
     /**
      * Returns the $number latest fixtures
      *
+     * @param  integer $number
+     *
      * @return array
      */
-    public function getLatest($number)
-    {
-        if (!is_int($number)) {
-            throw new \InvalidArgumentException(sprintf(
-                'The $number must be an integer, %s given',
-                gettype($number)
-            ));
-        } elseif ($number < 1) {
-            throw new \InvalidArgumentException(sprintf(
-                'The $number must be greater than or equal to one, %d given.',
-                $number
-            ));
-        } elseif ($number > $this->count()) {
-            throw new \InvalidArgumentException(sprintf(
-                'You requested the %d latest but the bag contains only %d fixture(s).',
-                $number, $this->count()
-            ));
-        }
-
-        return array_slice($this->fixtures, -$number);
-    }
-
-    /**
-     * Merges the given bag into this one
-     *
-     * @param  Bag $bag
-     */
-    public function merge(Bag $bag)
-    {
-        foreach ($bag as $key => $fixture) {
-            $this->fixtures[$key] = $fixture;
-        }
-    }
+    function latest($number);
 
     /**
      * Replaces the given $oldFixture by the $newFixture
@@ -107,30 +59,5 @@ class Bag implements \Countable, \IteratorAggregate
      * @param  object $oldFixture
      * @param  object $newFixture
      */
-    public function replace($oldFixture, $newFixture)
-    {
-        $key = array_search($oldFixture, $this->fixtures, true);
-
-        if (false === $key) {
-            throw new \InvalidArgumentException('The $oldFixture was not found in the bag.');
-        }
-
-        $this->fixtures[$key] = $newFixture;
-    }
-
-    /**
-     * @see Countable::count()
-     */
-    public function count()
-    {
-        return count($this->fixtures);
-    }
-
-    /**
-     * @see IteratorAggregate::getIterator()
-     */
-    public function getIterator()
-    {
-        return new \ArrayIterator($this->fixtures);
-    }
+    function replace($oldFixture, $newFixture);
 }

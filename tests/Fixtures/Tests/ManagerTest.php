@@ -22,7 +22,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method('saveBag')
             ->will($this->returnCallback(function ($bag) use($savedFixture) {
-                $bag['main'] = $savedFixture;
+                $bag->replace($bag->last(), $savedFixture);
             }))
         ;
 

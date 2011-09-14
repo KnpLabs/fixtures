@@ -9,7 +9,7 @@ use Symfony\Component\ClassLoader\UniversalClassLoader;
 
 $loader = new UniversalClassLoader();
 $loader->registerNamespaces(array(
-    'Fixtures'                  => $srcDirectory,
+    'Fixtures'                  => array($srcDirectory, __DIR__),
     'Doctrine\\Common'          => $vendorDirectory.'/doctrine-common/lib',
     'Doctrine\\DBAL'            => $vendorDirectory.'/doctrine-dbal/lib',
     'Doctrine\\ORM'             => $vendorDirectory.'/doctrine-orm/lib',
