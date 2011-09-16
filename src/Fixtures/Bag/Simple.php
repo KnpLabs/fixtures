@@ -9,7 +9,7 @@ use Fixtures\Bag;
  *
  * @author Antoine Hérault <antoine.herault@gmail.com>
  */
-class Simple implements Bag
+class Simple extends Base
 {
     private $fixtures = array();
 

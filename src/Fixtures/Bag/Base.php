@@ -34,7 +34,9 @@ abstract class Base implements Bag
      */
     public function last()
     {
-        return end($this->all()) ?: null;
+        $fixtures = $this->all();
+
+        return end($fixtures) ?: null;
     }
 
     /**
