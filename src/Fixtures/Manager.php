@@ -40,7 +40,7 @@ class Manager
      *
      * @return object
      */
-    public function create($factory, array $values)
+    public function create($factory, array $values = array())
     {
         $context = $this->factoryManager->createContext();
         $fixture = $context->create($factory, $values);
@@ -60,7 +60,7 @@ class Manager
      *
      * @return array
      */
-    public function createCollection($size, $factory, array $values)
+    public function createCollection($size, $factory, array $values = array())
     {
         $context  = $this->factoryManager->createContext();
         $fixtures = $context->createCollection($size, $factory, $values);

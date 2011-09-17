@@ -42,7 +42,7 @@ class Context
      *
      * @return object The new fixture
      */
-    public function create($factory, array $values)
+    public function create($factory, array $values = array())
     {
         $values = $this->createValueProvider($values);
 
@@ -58,7 +58,7 @@ class Context
      *
      * @return array The new fixtures collection
      */
-    public function createCollection($size, $factory, array $values)
+    public function createCollection($size, $factory, array $values = array())
     {
         $values = $this->createValueProvider($values);
 

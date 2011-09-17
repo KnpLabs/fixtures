@@ -35,7 +35,7 @@ class Manager
         foreach ($fixtures as $fixture) {
             $storage = $this->getFor($fixture);
             if ($storages->contains($storage)) {
-                $storages[$storage]->push($fixture);
+                $storages[$storage]->append($fixture);
             } else {
                 $storages->attach($storage, new \ArrayObject(array($fixture)));
             }

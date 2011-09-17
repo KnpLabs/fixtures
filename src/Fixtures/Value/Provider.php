@@ -73,14 +73,18 @@ class Provider
      */
     public function getRelation($name, $factory = null)
     {
-        $values = $this->get($name);
+        $values = $this->get($name, array());
+
+        if (is_object($values)) {
+            return $values;
+        }
 
         if (false === $values) {
             return null;
         }
 
         if (is_scalar($values)) {
-            return null;
+            $values = array('@factory' =>  $values);
         }
 
         if (isset($values['@factory'])) {
