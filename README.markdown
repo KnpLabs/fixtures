@@ -12,7 +12,7 @@ Let's imagine we are coding a simple blog (oh yeah).
 
     <?php
 
-    $factories = new Fixtures\Factory\Manager();
+    $factories = new Fixtures\FactoryManager();
     $factories->set('user', function ($provider) {
         $user = new Blog\Model\User();
         $user->setUsername($provider->get('username', 'John'));
@@ -29,35 +29,35 @@ Let's imagine we are coding a simple blog (oh yeah).
 
     <?php
 
-    $storages = new Fixtures\Storage\Manager();
+    $storages = new Fixtures\StorageManager();
     $storages->register(new Fixtures\Storage\Doctrine\ORM($entityManager));
 
-### Create a manager
+### Create an environment
 
     <?php
 
-    $manager = new Fixtures\Manager($factories, $storages);
+    $environment = new Fixtures\Environment($factories, $storages);
 
-    $manager->reset(); // it clears all the data from the database
+    $environment->reset(); // it clears all the data from the database
 
-    $article = $manager->create('article');
+    $article = $environment->create('article');
 
     echo $article->getTitle() // prints "The title"
     echo $article->getAuthor()->getUsername() // prints "John"
 
-    $manager->reset();
+    $environment->reset();
 
-    $bob = $manager->create('user', array(
+    $bob = $environment->create('user', array(
         'username' => 'Bob'
     ));
-    $article = $manager->create('article', array(
+    $article = $environment->create('article', array(
         'title'     => 'Bob\'s article',
         'author'    => $bob,
     ));
 
-    $manager->reset();
+    $environment->reset();
 
-    $articles = $manager->createCollection(100, 'article', array(
-        'title'     => new Fixtures\Value\Sequence\Text('Article number {number}'),
-        'author'    => $manager->create('user', array('username' => 'Bob')),
+    $articles = $environment->createCollection(100, 'article', array(
+        'title'     => new Fixtures\Sequence\Text('Article number {number}'),
+        'author'    => $environment->create('user', array('username' => 'Bob')),
     ));

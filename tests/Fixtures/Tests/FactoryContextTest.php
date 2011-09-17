@@ -1,10 +1,10 @@
 <?php
 
-namespace Fixtures\Tests\Factory;
+namespace Fixtures\Tests;
 
-use Fixtures\Factory\Context;
+use Fixtures\FactoryContext;
 
-class ContextTest extends \PHPUnit_Framework_TestCase
+class FactoryContextTest extends \PHPUnit_Framework_TestCase
 {
     public function testCreate()
     {
@@ -17,7 +17,7 @@ class ContextTest extends \PHPUnit_Framework_TestCase
             ->with($this->equalTo('user'))
             ->will($this->returnValue($factory))
         ;
-        $context = new Context($manager);
+        $context = new FactoryContext($manager);
 
         $this->assertEquals($user, $context->create('user'), '->create() returns the created fixture');
         $this->assertEquals(array($user), $context->getCreatedFixtures(), '->create() adds the created fixture into the created fixtures list');
@@ -44,7 +44,7 @@ class ContextTest extends \PHPUnit_Framework_TestCase
             ->with($this->equalTo('user'))
             ->will($this->returnValue($factory))
         ;
-        $context = new Context($manager);
+        $context = new FactoryContext($manager);
 
         $this->assertEquals($users, $context->createCollection(3, 'user'), '->createCollection() returns the created fixtures collection');
         $this->assertEquals($users, $context->getCreatedFixtures(), '->createCollection() adds all the created fixtures to the created fixtures list');
@@ -52,6 +52,6 @@ class ContextTest extends \PHPUnit_Framework_TestCase
 
     public function getFactoryManagerMock()
     {
-        return $this->getMock('Fixtures\Factory\Manager');
+        return $this->getMock('Fixtures\FactoryManager');
     }
 }

@@ -1,14 +1,14 @@
 <?php
 
-namespace Fixtures\Tests\Storage;
+namespace Fixtures\Tests;
 
-use Fixtures\Storage\Manager;
+use Fixtures\StorageManager;
 
-class ManagerTest extends \PHPUnit_Framework_TestCase
+class StorageManagerTest extends \PHPUnit_Framework_TestCase
 {
     public function testRegister()
     {
-        $manager = new Manager();
+        $manager = new StorageManager();
 
         $this->assertAttributeEquals(array(), 'storages', $manager);
 
@@ -24,7 +24,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
     public function testRegisterTwiceTheSameStorage()
     {
         $storage = $this->getStorageMock();
-        $manager = new Manager();
+        $manager = new StorageManager();
 
         $manager->register($storage);
         $manager->register($storage);
@@ -33,7 +33,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
     public function testIsRegistered()
     {
         $storage = $this->getStorageMock();
-        $manager = new Manager();
+        $manager = new StorageManager();
 
         $this->assertFalse($manager->isRegistered($storage), '->isRegistered() returns FALSE when the given storage is not registered');
 
@@ -61,7 +61,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue(true))
         ;
 
-        $manager = new Manager();
+        $manager = new StorageManager();
         $manager->register($firstStorage);
         $manager->register($secondStorage);
 
@@ -73,7 +73,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetForWithNoRegisteredStorage()
     {
-        $manager = new Manager();
+        $manager = new StorageManager();
         $manager->getFor(new \stdClass);
     }
 
@@ -89,7 +89,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue(false))
         ;
 
-        $manager = new Manager();
+        $manager = new StorageManager();
         $manager->register($storage);
 
         $manager->getFor(new \stdClass);
@@ -97,6 +97,6 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
 
     public function getStorageMock()
     {
-        return $this->getMock('Fixtures\Storage\Storage');
+        return $this->getMock('Fixtures\Storage');
     }
 }

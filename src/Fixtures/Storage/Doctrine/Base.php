@@ -2,7 +2,7 @@
 
 namespace Fixtures\Storage\Doctrine;
 
-use Fixtures\Storage\Storage;
+use Fixtures\Storage;
 
 /**
  * Base class for the Doctrine storages

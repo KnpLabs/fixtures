@@ -1,8 +1,6 @@
 <?php
 
-namespace Fixtures\Value;
-
-use Fixtures\Factory\Context;
+namespace Fixtures;
 
 /**
  * The value provider is passed to the factories to provide them the values and
@@ -10,13 +8,13 @@ use Fixtures\Factory\Context;
  *
  * @author Antoine Hérault <antoine.herault@gmail.com>
  */
-class Provider
+class ValueProvider
 {
     private $values;
     private $context;
     private $currentIndex = 0;
 
-    public function __construct(array $values, Context $context)
+    public function __construct(array $values, FactoryContext $context)
     {
         $this->values  = $values;
         $this->context = $context;

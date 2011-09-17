@@ -3,11 +3,11 @@
 namespace Fixtures;
 
 /**
- * The fixtures manager
+ * The fixtures environment
  *
  * @author Antoine Hérault <antoine.herault@gmail.com>
  */
-class Manager
+class Environment
 {
     private $factoryManager;
     private $storageManager;
@@ -15,10 +15,10 @@ class Manager
     /**
      * Constructor
      *
-     * @param  Factory\Manager $factoryManager
-     * @param  Storage\Manager $storageManager
+     * @param  FactoryManager $factoryManager
+     * @param  StorageManager $storageManager
      */
-    public function __construct(Factory\Manager $factoryManager, Storage\Manager $storageManager)
+    public function __construct(FactoryManager $factoryManager, StorageManager $storageManager)
     {
         $this->factoryManager = $factoryManager;
         $this->storageManager = $storageManager;
@@ -51,6 +51,22 @@ class Manager
     }
 
     /**
+     * Creates a fixture instance using the specified factory and with the
+     * given values
+     *
+     * @param  string $factory The factory name
+     * @param  array  $values  An array of values
+     *
+     * @return object
+     */
+    public function instanciate($factory, array $values = array())
+    {
+        $context = $this->factoryManager->createContext();
+
+        return $context->create($factory, $values);
+    }
+
+    /**
      * Creates a collection of fixtures using the specified factory and the
      * given values
      *
@@ -68,5 +84,22 @@ class Manager
         $this->storageManager->saveAll($context->getCreatedFixtures());
 
         return $fixtures;
+    }
+
+    /**
+     * Creates a collection of fixture instances using the specified factory
+     * and with the given values
+     *
+     * @param  integer $size    The collection size
+     * @param  string  $factory The factory name
+     * @param  array   $values  An array of values
+     *
+     * @return array
+     */
+    public function instanciateCollection($size, $factory, array $values = array())
+    {
+        $context  = $this->factoryManager->createContext();
+
+        return $context->createCollection($size, $factory, $values);
     }
 }

@@ -1,13 +1,13 @@
 <?php
 
-namespace Fixtures\Storage;
+namespace Fixtures;
 
 /**
  * Manages a set of registered storages
  *
  * @author Antoine Hérault <antoine.herault@gmail.com>
  */
-class Manager
+class StorageManager
 {
     private $storages = array();
 

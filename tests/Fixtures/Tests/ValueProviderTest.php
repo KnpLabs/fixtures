@@ -2,17 +2,17 @@
 
 namespace Fixtures\Tests\Value;
 
-use Fixtures\Value\Provider;
+use Fixtures\ValueProvider;
 
-class ProviderTest extends \PHPUnit_Framework_TestCase
+class ValueProviderTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @dataProvider getDataToTestGet
      */
     public function testGet(array $values, $name, $default, $expected, $message)
     {
-        $context  = $this->getContextMock();
-        $provider = new Provider($values, $context);
+        $context  = $this->getFactoryContextMock();
+        $provider = new ValueProvider($values, $context);
     }
 
     public function getDataToTestGet()
@@ -42,8 +42,8 @@ class ProviderTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    public function getContextMock()
+    public function getFactoryContextMock()
     {
-        return $this->getMock('Fixtures\Factory\Context', array(), array(), '', false);
+        return $this->getMock('Fixtures\FactoryContext', array(), array(), '', false);
     }
 }

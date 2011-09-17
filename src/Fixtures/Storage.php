@@ -1,6 +1,6 @@
 <?php
 
-namespace Fixtures\Storage;
+namespace Fixtures;
 
 /**
  * Interface for the fixture storage classes

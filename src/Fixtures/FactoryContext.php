@@ -1,27 +1,25 @@
 <?php
 
-namespace Fixtures\Factory;
-
-use Fixtures\Value\Provider;
+namespace Fixtures;
 
 /**
  * Represents a fixtures creation context
  *
  * @author Antoine Hérault <antoine.herault@gmail.com>
  */
-class Context
+class FactoryContext
 {
-    private $manager;
+    private $factoryManager;
     private $createdFixtures = array();
 
     /**
      * Constructor
      *
-     * @param  Manager $manager The factory manager
+     * @param  Manager $factoryManager The factory manager
      */
-    public function __construct(Manager $manager)
+    public function __construct(FactoryManager $factoryManager)
     {
-        $this->manager = $manager;
+        $this->factoryManager = $factoryManager;
     }
 
     /**
@@ -35,7 +33,7 @@ class Context
     }
 
     /**
-     * Creats a fixture
+     * Creates a fixture
      *
      * @param  string $factory The factory name
      * @param  array  $values  The values for the factory
@@ -80,13 +78,12 @@ class Context
      */
     protected function createValueProvider(array $values)
     {
-        return new Provider($values, $this);
+        return new ValueProvider($values, $this);
     }
 
-    private function doCreate($factory, Provider $values)
+    private function doCreate($factory, ValueProvider $values)
     {
-        $factory = $this->manager->get($factory);
-        $fixture = call_user_func_array($factory, array($values));
+        $fixture = $this->factoryManager->get($factory)->create($values);
 
         $this->createdFixtures[] = $fixture;
 

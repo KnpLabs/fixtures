@@ -2,10 +2,10 @@
 
 namespace Fixtures\Tests;
 
-use Fixtures\Manager;
-use Fixtures\Factory\Context;
+use Fixtures\Environment;
+use Fixtures\FactoryContext;
 
-class ManagerTest extends \PHPUnit_Framework_TestCase
+class EnvironmentTest extends \PHPUnit_Framework_TestCase
 {
     public function testCreate()
     {
@@ -22,7 +22,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
         $factoryManager
             ->expects($this->once())
             ->method('createContext')
-            ->will($this->returnValue(new Context($factoryManager)))
+            ->will($this->returnValue(new FactoryContext($factoryManager)))
         ;
         $storageManager = $this->getStorageManagerMock();
         $storageManager
@@ -31,7 +31,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
             ->with($this->equalTo(array($user)))
         ;
 
-        $manager = new Manager($factoryManager, $storageManager);
+        $manager = new Environment($factoryManager, $storageManager);
 
         $this->assertEquals($user, $manager->create('user', array('username' => 'John')));
     }
@@ -61,7 +61,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
         $factoryManager
             ->expects($this->once())
             ->method('createContext')
-            ->will($this->returnValue(new Context($factoryManager)))
+            ->will($this->returnValue(new FactoryContext($factoryManager)))
         ;
         $storageManager = $this->getStorageManagerMock();
         $storageManager
@@ -70,18 +70,18 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
             ->with($this->equalTo($users))
         ;
 
-        $manager = new Manager($factoryManager, $storageManager);
+        $manager = new Environment($factoryManager, $storageManager);
 
         $this->assertEquals($users, $manager->createCollection(5, 'user', array('username' => 'John')));
     }
 
     public function getFactoryManagerMock()
     {
-        return $this->getMock('Fixtures\Factory\Manager');
+        return $this->getMock('Fixtures\FactoryManager');
     }
 
     public function getStorageManagerMock()
     {
-        return $this->getMock('Fixtures\Storage\Manager');
+        return $this->getMock('Fixtures\StorageManager');
     }
 }

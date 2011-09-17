@@ -5,7 +5,7 @@ require_once __DIR__ . '/bootstrap_doctrine.php';
 use Entity\User;
 use Entity\Article;
 
-$factoryManager = new Fixtures\Factory\Manager();
+$factoryManager = new Fixtures\FactoryManager();
 $factoryManager->set('user', function ($provider) {
     $user = new User();
     $user->setUsername($provider->get('username', 'John'));
@@ -21,13 +21,13 @@ $factoryManager->set('article', function ($provider) {
     return $article;
 });
 
-$storageManager = new Fixtures\Storage\Manager();
+$storageManager = new Fixtures\StorageManager();
 $storageManager->register(new Fixtures\Storage\Doctrine\ORM($entityManager));
 
-$manager = new Fixtures\Manager($factoryManager, $storageManager);
+$environment = new Fixtures\Environment($factoryManager, $storageManager);
 
 
-$manager->reset();
-$manager->createCollection(100, 'article', array(
-    'author'    => $manager->create('user')
+$environment->reset();
+$environment->createCollection(100, 'article', array(
+    'author'    => $environment->create('user')
 ));
