@@ -1,8 +1,8 @@
 <?php
 
-namespace Fixtures\Tests\Sequence;
+namespace Fixtures\Tests\Value\Sequence;
 
-use Fixtures\Sequence\Cycle;
+use Fixtures\Value\Sequence\Cycle;
 
 class CycleTest extends \PHPUnit_Framework_TestCase
 {

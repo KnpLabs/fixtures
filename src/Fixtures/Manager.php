@@ -9,209 +9,64 @@ namespace Fixtures;
  */
 class Manager
 {
-    private $factories = array();
-    private $storages  = array();
+    private $factoryManager;
+    private $storageManager;
 
     /**
-     * Creates a new fixture and saves it
+     * Constructor
      *
-     * @param  string $name
-     * @param  array  $values
-     * @param  Bag    $bag
-     *
-     * @return object
+     * @param  Factory\Manager $factoryManager
+     * @param  Storage\Manager $storageManager
      */
-    public function create($name, array $values = array(), Bag $bag = null)
+    public function __construct(Factory\Manager $factoryManager, Storage\Manager $storageManager)
     {
-        if (null === $bag) {
-            $bag = $this->createBag();
-        }
-
-        $bag->add($this->newInstance($name, $values, $bag));
-
-        $this->saveBag($bag);
-
-        return $bag->last();
-    }
-
-    /**
-     * Creates a collection of new fixtures and saves it
-     *
-     * @param  string $name
-     * @param  array  $values
-     * @param  Bag    $bag
-     *
-     * @return object
-     */
-    public function createCollection($size, $name, array $values, Bag $bag = null)
-    {
-        $bag->addCollection($this->newCollectionInstance($size, $name, $values, $bag));
-
-        $this->saveBag($bag);
-
-        return $bag->latest($size);
+        $this->factoryManager = $factoryManager;
+        $this->storageManager = $storageManager;
     }
 
     /**
      * Resets all the storages
-     *
-     * @return void
      */
     public function reset()
     {
-        foreach ($this->storages as $storage) {
-            $storage->reset();
-        }
+        $this->storageManager->resetAll();
     }
 
     /**
-     * Creates a new fixture instance
+     * Creates a fixture using the specified factory and with the given values
      *
-     * @param  string              $name
-     * @param  array|ValueProvider $values
-     * @param  Bag                 $bag
+     * @param  string $factory The factory name
+     * @param  array  $values  An array of values
      *
      * @return object
      */
-    public function newInstance($name, $values = array(), Bag $bag = null)
+    public function create($factory, array $values)
     {
-        if (null === $bag) {
-            $bag = $this->createBag();
-        }
+        $context = $this->factoryManager->createContext();
+        $fixture = $context->create($factory, $values);
 
-        if ($values instanceof ValueProvider) {
-            $valueProvider = $values;
-        } elseif (is_array($values)) {
-            $valueProvider = new ValueProvider\Simple($this, $values, $bag);
-        } else {
-            throw new \InvalidArgumentException('The $values must be either an array or a ValueProvider instance.');
-        }
+        $this->storageManager->saveAll($context->getCreatedFixtures());
 
-        return $this->getFactory($name)->create($valueProvider);
+        return $fixture;
     }
 
-    public function newInstanceCollection($size, $name, $values = null, Bag $bag = null)
+    /**
+     * Creates a collection of fixtures using the specified factory and the
+     * given values
+     *
+     * @param  integer $size    The collection size
+     * @param  string  $factory The factory name
+     * @param  array   $values  An array of values
+     *
+     * @return array
+     */
+    public function createCollection($size, $factory, array $values)
     {
-        $size = intval($size);
+        $context  = $this->factoryManager->createContext();
+        $fixtures = $context->createCollection($size, $factory, $values);
 
-        if ($size < 1) {
-            throw new \InvalidArgumentException('The $size must an integer greater than or equal to one.');
-        }
-
-        if ($values instanceof ValueProvider) {
-            $values = $values->all();
-        }
-
-        if (null === $bag) {
-            $bag = $this->createBag();
-        }
-
-        $values = new ValueProvider\Collection($values);
-
-        $fixtures = array();
-        for ($i = 0; $i < $size; $i++) {
-            $values->setIndex($i);
-            $fixtures[] = $this->newInstance($name, $values, $bag);
-        }
+        $this->storageManager->saveAll($context->getCreatedFixtures());
 
         return $fixtures;
-    }
-
-    /**
-     * Saves the given fixture
-     *
-     * @param  object $fixture
-     *
-     * @return object The saved fixture (mostly the same)
-     */
-    public function save($fixture)
-    {
-        if (!is_object($fixture)) {
-            throw new \InvalidArgumentException('The $fixture must be an object.');
-        }
-
-        return $this->getFixtureStorage($fixture)->save($fixture);
-    }
-
-    /**
-     * Saves the given bag
-     *
-     * @param  Bag $bag
-     */
-    public function saveBag(Bag $bag)
-    {
-        $storages = array();
-        foreach ($bag as $fixture) {
-            $storages[] = $this->getFixtureStorage($fixture);
-        }
-
-        foreach (array_unique($storages, SORT_REGULAR) as $storage) {
-            $storage->saveBag(new Bag\Fixed(new Bag\Storage($bag, $storage)));
-        }
-    }
-
-    /**
-     * Defines a factory
-     *
-     * @param  string  $name
-     * @param  Factory $factory
-     */
-    public function setFactory($name, Factory $factory)
-    {
-        $this->factories[$name] = $factory;
-    }
-
-    /**
-     * Returns the specified factory
-     *
-     * @param  string $factory
-     *
-     * @return Factory
-     */
-    public function getFactory($name)
-    {
-        if (!isset($this->factories[$name])) {
-            throw new \InvalidArgumentException(sprintf('The factory \'%s\' is not defined.', $name));
-        }
-
-        return $this->factories[$name];
-    }
-
-    /**
-     * Adds a storage
-     *
-     * @param  Storage $storage
-     */
-    public function addStorage(Storage $storage)
-    {
-        $this->storages[] = $storage;
-    }
-
-    /**
-     * Returns the storage adapted to the given fixture
-     *
-     * @param  object $fixture The fixture instance
-     *
-     * @return Storage
-     *
-     * @throws RuntimeException if the storage was not found
-     */
-    private function getFixtureStorage($fixture)
-    {
-        foreach ($this->storages as $storage) {
-            if ($storage->supports($fixture)) {
-                return $storage;
-            }
-        }
-
-        throw new \RuntimeException(sprintf(
-            'There is no storage for the fixture (instance of %s).',
-            get_class($fixture)
-        ));
-    }
-
-    private function createBag(array $fixtures = array())
-    {
-        return new Bag\Simple($fixtures);
     }
 }

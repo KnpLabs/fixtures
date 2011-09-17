@@ -2,8 +2,7 @@
 
 namespace Fixtures\Storage\Doctrine;
 
-use Fixtures\Storage;
-use Fixtures\Bag;
+use Fixtures\Storage\Storage;
 
 /**
  * Base class for the Doctrine storages
@@ -37,9 +36,9 @@ abstract class Base implements Storage
     /**
      * {@inheritDoc}
      */
-    public function saveBag(Bag $bag)
+    public function saveAll(array $fixtures)
     {
-        foreach ($bag as $fixture) {
+        foreach ($fixtures as $fixture) {
             $this->manager->persist($fixture);
         }
 

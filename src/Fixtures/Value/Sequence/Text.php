@@ -1,8 +1,8 @@
 <?php
 
-namespace Fixtures\Sequence;
+namespace Fixtures\Value\Sequence;
 
-use Fixtures\Sequence;
+use Fixtures\Value\Sequence;
 
 /**
  * Text sequence

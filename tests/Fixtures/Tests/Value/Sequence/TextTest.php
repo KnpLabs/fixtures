@@ -1,8 +1,8 @@
 <?php
 
-namespace Fixtures\Tests\Sequence;
+namespace Fixtures\Tests\Value\Sequence;
 
-use Fixtures\Sequence\Text;
+use Fixtures\Value\Sequence\Text;
 
 class TextTest extends \PHPUnit_Framework_TestCase
 {

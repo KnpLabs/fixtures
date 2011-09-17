@@ -3,106 +3,85 @@
 namespace Fixtures\Tests;
 
 use Fixtures\Manager;
+use Fixtures\Factory\Context;
 
 class ManagerTest extends \PHPUnit_Framework_TestCase
 {
     public function testCreate()
     {
-        $fixture = new \stdClass();
-        $savedFixture = new \stdClass();
-
-        $manager = $this->getMock('Fixtures\Manager', array('newInstance', 'saveBag'));
-        $manager
+        $user = new \stdClass;
+        $factoryManager = $this->getFactoryManagerMock();
+        $factoryManager
             ->expects($this->once())
-            ->method('newInstance')
-            ->with($this->equalTo('foo'))
-            ->will($this->returnValue($fixture))
-        ;
-        $manager
-            ->expects($this->once())
-            ->method('saveBag')
-            ->will($this->returnCallback(function ($bag) use($savedFixture) {
-                $bag->replace($bag->last(), $savedFixture);
+            ->method('get')
+            ->with($this->equalTo('user'))
+            ->will($this->returnValue(function () use ($user) {
+                return $user;
             }))
         ;
+        $factoryManager
+            ->expects($this->once())
+            ->method('createContext')
+            ->will($this->returnValue(new Context($factoryManager)))
+        ;
+        $storageManager = $this->getStorageManagerMock();
+        $storageManager
+            ->expects($this->once())
+            ->method('saveAll')
+            ->with($this->equalTo(array($user)))
+        ;
 
-        $this->assertEquals($savedFixture, $manager->create('foo'), '->create() returns a new saved fixture');
+        $manager = new Manager($factoryManager, $storageManager);
+
+        $this->assertEquals($user, $manager->create('user', array('username' => 'John')));
     }
 
-    public function testNewInstance()
+    public function testCreateCollection()
     {
-        $fixture = new \stdClass();
-        $factory = $this->getMock('Fixtures\Factory');
-        $factory
-            ->expects($this->once())
-            ->method('create')
-            ->will($this->returnValue($fixture))
-        ;
-        $manager = new Manager();
-        $manager->setFactory('foo', $factory);
-        $this->assertEquals($fixture, $manager->newInstance('foo'), '->newInstance() creates a new fixture instance via the specified factory');
+        $users = array(
+            $foo = new \stdClass,
+            $bar = new \stdClass,
+            $baz = new \stdClass,
+            $bat = new \stdClass,
+            $ban = new \stdClass,
+        );
+        $usersIterator = new \ArrayIterator($users);
+        $factoryManager = $this->getFactoryManagerMock();
+        $factoryManager
+            ->expects($this->exactly(5))
+            ->method('get')
+            ->with($this->equalTo('user'))
+            ->will($this->returnValue(function () use ($usersIterator) {
+                $user = $usersIterator->current();
+                $usersIterator->next();
 
-        $message = '->newInstance() throws an InvalidArgumentException when the specified factory is not defined';
-        try {
-            $manager->newInstance('bar');
-            $this->fail($message);
-        } catch (\InvalidArgumentException $e) {
-            $this->anything($message);
-        }
+                return $user;
+            }))
+        ;
+        $factoryManager
+            ->expects($this->once())
+            ->method('createContext')
+            ->will($this->returnValue(new Context($factoryManager)))
+        ;
+        $storageManager = $this->getStorageManagerMock();
+        $storageManager
+            ->expects($this->once())
+            ->method('saveAll')
+            ->with($this->equalTo($users))
+        ;
+
+        $manager = new Manager($factoryManager, $storageManager);
+
+        $this->assertEquals($users, $manager->createCollection(5, 'user', array('username' => 'John')));
     }
 
-    public function testSave()
+    public function getFactoryManagerMock()
     {
-        $fixture = new \stdClass();
-        $savedFixture = new \stdClass();
+        return $this->getMock('Fixtures\Factory\Manager');
+    }
 
-        $storage1 = $this->getMock('Fixtures\Storage');
-        $storage1
-            ->expects($this->once())
-            ->method('supports')
-            ->with($this->equalTo($fixture))
-            ->will($this->returnValue(false))
-        ;
-        $storage1
-            ->expects($this->never())
-            ->method('save')
-        ;
-        $storage2 = $this->getMock('Fixtures\Storage');
-        $storage2
-            ->expects($this->once())
-            ->method('supports')
-            ->with($this->equalTo($fixture))
-            ->will($this->returnValue(true))
-        ;
-        $storage2
-            ->expects($this->once())
-            ->method('save')
-            ->with($this->equalTo($fixture))
-            ->will($this->returnValue($savedFixture))
-        ;
-        $storage3 = $this->getMock('Fixtures\Storage');
-        $storage3
-            ->expects($this->never())
-            ->method('supports')
-        ;
-        $storage3
-            ->expects($this->never())
-            ->method('save')
-        ;
-        $manager = new Manager();
-        $manager->addStorage($storage1);
-        $manager->addStorage($storage2);
-        $manager->addStorage($storage3);
-        $this->assertEquals($savedFixture, $manager->save($fixture), '->save() uses the first storage supporting the given fixture');
-
-        $manager = new Manager();
-        $fixture = new \stdClass();
-        $message = '->save() throws a RuntimeException when there is no storage available for the given fixture';
-        try {
-            $manager->save($fixture);
-            $this->fail($message);
-        } catch (\RuntimeException $e) {
-            $this->anything($message);
-        }
+    public function getStorageManagerMock()
+    {
+        return $this->getMock('Fixtures\Storage\Manager');
     }
 }

@@ -1,15 +1,51 @@
 <?php
 
-namespace Fixtures;
+namespace Fixtures\Storage;
 
 /**
  * Manages a set of registered storages
  *
  * @author Antoine Hérault <antoine.herault@gmail.com>
  */
-class StorageManager
+class Manager
 {
     private $storages = array();
+
+    /**
+     * Resets all the registered storages
+     *
+     * @return void
+     */
+    public function resetAll()
+    {
+        foreach ($this->storages as $storage) {
+            $storage->reset();
+        }
+    }
+
+    /**
+     * Saves all the given fixtures
+     *
+     * @param  array $fixtures
+     */
+    public function saveAll(array $fixtures)
+    {
+        // group the fixtures by storage
+        $storages = new \SplObjectStorage();
+        foreach ($fixtures as $fixture) {
+            $storage = $this->getFor($fixture);
+            if ($storages->contains($storage)) {
+                $storages[$storage]->push($fixture);
+            } else {
+                $storages->attach($storage, new \ArrayObject(array($fixture)));
+            }
+        }
+
+        // save each storage fixtures
+        foreach ($storages as $storage) {
+            $storage->saveAll($storages[$storage]->getArrayCopy());
+        }
+    }
 
     /**
      * Indicates whether the given storage is already registered

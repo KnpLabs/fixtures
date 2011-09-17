@@ -1,30 +1,30 @@
 <?php
 
-namespace Fixtures\Tests;
+namespace Fixtures\Tests\Factory;
 
-use Fixtures\FactoryManager;
+use Fixtures\Factory\Manager;
 
-class FactoryManagerTest extends \PHPUnit_Framework_TestCase
+class ManagerTest extends \PHPUnit_Framework_TestCase
 {
     public function testSet()
     {
-        $manager = new FactoryManager();
+        $manager = new Manager();
 
         $this->assertAttributeEquals(array(), 'factories', $manager);
 
-        $manager->set('foo', $foo = $this->getFactoryMock());
-        $manager->set('bar', $bar = $this->getFactoryMock());
+        $manager->set('foo', $foo = function () {});
+        $manager->set('bar', $bar = function () {});
 
         $this->assertAttributeEquals(array('foo' => $foo, 'bar' => $bar), 'factories', $manager);
     }
 
     public function testHas()
     {
-        $manager = new FactoryManager();
+        $manager = new Manager();
 
         $this->assertFalse($manager->has('foo'), '->has() returns FALSE when there is no defined factory');
 
-        $manager->set('foo', $this->getFactoryMock());
+        $manager->set('foo', function () {});
 
         $this->assertTrue($manager->has('foo'), '->has() returns TRUE when the specified factory is defined');
         $this->assertFalse($manager->has('bar'), '->has() returns FALSE when the specified factory is NOT defined');
@@ -32,8 +32,8 @@ class FactoryManagerTest extends \PHPUnit_Framework_TestCase
 
     public function testGet()
     {
-        $manager = new FactoryManager();
-        $manager->set('foo', $foo = $this->getFactoryMock());
+        $manager = new Manager();
+        $manager->set('foo', $foo = function () {});
 
         $this->assertEquals($foo, $manager->get('foo'), '->get() returns the specified factory');
     }
@@ -43,7 +43,7 @@ class FactoryManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetWhenThereIsNoDefinedFactory()
     {
-        $manager = new FactoryManager();
+        $manager = new Manager();
         $manager->get('foo');
     }
 
@@ -52,13 +52,8 @@ class FactoryManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetAnUndefinedFactory()
     {
-        $manager = new FactoryManager();
-        $manager->set('foo', $this->getFactoryMock());
+        $manager = new Manager();
+        $manager->set('foo', function () {});
         $manager->get('bar');
-    }
-
-    public function getFactoryMock()
-    {
-        return $this->getMock('Fixtures\Factory');
     }
 }

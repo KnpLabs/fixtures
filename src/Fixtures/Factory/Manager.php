@@ -1,13 +1,15 @@
 <?php
 
-namespace Fixtures;
+namespace Fixtures\Factory;
+
+use Closure;
 
 /**
- * Manages a set of named factories
+ * The factory manager handles a set of named factories
  *
  * @author Antoine Hérault <antoine.herault@gmail.com>
  */
-class FactoryManager
+class Manager
 {
     private $factories = array();
 
@@ -15,9 +17,9 @@ class FactoryManager
      * Defines a factory
      *
      * @param  string  $name
-     * @param  Factory $factory
+     * @param  Closure $factory
      */
-    public function set($name, Factory $factory)
+    public function set($name, Closure $factory)
     {
         $this->factories[$name] = $factory;
     }
@@ -39,7 +41,7 @@ class FactoryManager
      *
      * @param  string $name
      *
-     * @return Factory
+     * @return Closure
      */
     public function get($name)
     {
@@ -52,5 +54,15 @@ class FactoryManager
         }
 
         return $this->factories[$name];
+    }
+
+    /**
+     * Returns a new factory context
+     *
+     * @return Context
+     */
+    public function createContext()
+    {
+        return new Context($this);
     }
 }

@@ -1,14 +1,14 @@
 <?php
 
-namespace Fixtures\Tests;
+namespace Fixtures\Tests\Storage;
 
-use Fixtures\StorageManager;
+use Fixtures\Storage\Manager;
 
-class StorageManagerTest extends \PHPUnit_Framework_TestCase
+class ManagerTest extends \PHPUnit_Framework_TestCase
 {
     public function testRegister()
     {
-        $manager = new StorageManager();
+        $manager = new Manager();
 
         $this->assertAttributeEquals(array(), 'storages', $manager);
 
@@ -24,7 +24,7 @@ class StorageManagerTest extends \PHPUnit_Framework_TestCase
     public function testRegisterTwiceTheSameStorage()
     {
         $storage = $this->getStorageMock();
-        $manager = new StorageManager();
+        $manager = new Manager();
 
         $manager->register($storage);
         $manager->register($storage);
@@ -33,7 +33,7 @@ class StorageManagerTest extends \PHPUnit_Framework_TestCase
     public function testIsRegistered()
     {
         $storage = $this->getStorageMock();
-        $manager = new StorageManager();
+        $manager = new Manager();
 
         $this->assertFalse($manager->isRegistered($storage), '->isRegistered() returns FALSE when the given storage is not registered');
 
@@ -61,7 +61,7 @@ class StorageManagerTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue(true))
         ;
 
-        $manager = new StorageManager();
+        $manager = new Manager();
         $manager->register($firstStorage);
         $manager->register($secondStorage);
 
@@ -73,7 +73,7 @@ class StorageManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetForWithNoRegisteredStorage()
     {
-        $manager = new StorageManager();
+        $manager = new Manager();
         $manager->getFor(new \stdClass);
     }
 
@@ -89,7 +89,7 @@ class StorageManagerTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue(false))
         ;
 
-        $manager = new StorageManager();
+        $manager = new Manager();
         $manager->register($storage);
 
         $manager->getFor(new \stdClass);
@@ -97,6 +97,6 @@ class StorageManagerTest extends \PHPUnit_Framework_TestCase
 
     public function getStorageMock()
     {
-        return $this->getMock('Fixtures\Storage');
+        return $this->getMock('Fixtures\Storage\Storage');
     }
 }

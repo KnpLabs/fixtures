@@ -1,7 +1,12 @@
 <?php
 
-namespace Fixtures;
+namespace Fixtures\Storage;
 
+/**
+ * Interface for the fixture storage classes
+ *
+ * @author Antoine Hérault <antoine.herault@gmail.com>
+ */
 interface Storage
 {
     /**
@@ -18,16 +23,18 @@ interface Storage
      *
      * @param  object $fixture
      *
-     * @return object The saved fixture (mostly the same)
+     * @return void
      */
     function save($fixture);
 
     /**
-     * Saves the given fixtures bag
+     * Saves all the given fixtures
      *
-     * @param  Bag A fixtures bag
+     * @param  array An array of fixtures
+     *
+     * @return void
      */
-    function saveBag(Bag $bag);
+    function saveAll(array $fixtures);
 
     /**
      * Resets the storage, clearing all the data it contains
