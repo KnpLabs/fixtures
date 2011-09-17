@@ -56,4 +56,13 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
         $manager->set('foo', function () {});
         $manager->get('bar');
     }
+
+    public function testCreateContext()
+    {
+        $manager = new Manager();
+        $context = $manager->createContext();
+
+        $this->assertInstanceOf('Fixtures\Factory\Context', $context, '->createContext() returns a Context instance');
+        $this->assertAttributeEquals($manager, 'manager', $context, '->createContext() creates the Context using itself as manager');
+    }
 }
