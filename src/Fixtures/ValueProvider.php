@@ -14,6 +14,13 @@ class ValueProvider
     private $context;
     private $currentIndex = 0;
 
+    /**
+     * Constructor
+     *
+     * @param  array          $values  The values
+     * @param  FactoryContext $context The factory context used to create the
+     *                                 related fixtures
+     */
     public function __construct(array $values, FactoryContext $context)
     {
         $this->values  = $values;
