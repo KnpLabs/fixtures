@@ -11,6 +11,7 @@ class FactoryContext
 {
     private $factoryManager;
     private $createdFixtures = array();
+    private $currentFactoryNames = array();
 
     /**
      * Constructor
@@ -30,6 +31,20 @@ class FactoryContext
     public function getCreatedFixtures()
     {
         return $this->createdFixtures;
+    }
+
+    /**
+     * Returns the current factory name
+     *
+     * @return string or NULL if there is no current factory
+     */
+    public function getCurrentFactoryName()
+    {
+        if (0 === count($this->currentFactoryNames)) {
+            return null;
+        }
+
+        return end($this->currentFactoryNames);
     }
 
     /**
@@ -83,7 +98,11 @@ class FactoryContext
 
     private function doCreate($factory, ValueProvider $values)
     {
+        $this->currentFactoryNames[] = $factory;
+
         $fixture = $this->factoryManager->get($factory)->create($values);
+
+        array_pop($this->currentFactoryNames);
 
         $this->createdFixtures[] = $fixture;
 

@@ -69,6 +69,28 @@ class ValueProvider
     }
 
     /**
+     * Returns the specified value or raises an exception
+     *
+     * @param  string $name
+     *
+     * @return mixed
+     *
+     * @throw RuntimeException when the value does not exist
+     */
+    public function getOrError($name)
+    {
+        if ( ! $this->has($name)) {
+            throw new \RuntimeException(sprintf(
+                'You must provide a \'%s\' value to the \'%s\' factory.',
+                $name,
+                $this->context->getCurrentFactoryName()
+            ));
+        }
+
+        return $this->get($name);
+    }
+
+    /**
      * Returns the specified relation
      *
      * @param  string $name
