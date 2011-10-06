@@ -3,85 +3,82 @@
 namespace Fixtures\Tests;
 
 use Fixtures\Environment;
-use Fixtures\FactoryContext;
+use Fixtures\FactoryManager;
+use Fixtures\Storage;
+use Fixtures\StorageManager;
 
 class EnvironmentTest extends \PHPUnit_Framework_TestCase
 {
-    public function testCreate()
+    private $environment;
+    private $storage;
+
+    public function setUp()
     {
-        $user = new \stdClass;
-        $factoryManager = $this->getFactoryManagerMock();
-        $factoryManager
-            ->expects($this->once())
-            ->method('get')
-            ->with($this->equalTo('user'))
-            ->will($this->returnValue(function () use ($user) {
-                return $user;
-            }))
-        ;
-        $factoryManager
-            ->expects($this->once())
-            ->method('createContext')
-            ->will($this->returnValue(new FactoryContext($factoryManager)))
-        ;
-        $storageManager = $this->getStorageManagerMock();
-        $storageManager
-            ->expects($this->once())
-            ->method('saveAll')
-            ->with($this->equalTo(array($user)))
-        ;
+        $this->storage = new Storage\Stub;
 
-        $manager = new Environment($factoryManager, $storageManager);
+        $storageManager = new StorageManager;
+        $storageManager->register($this->storage);
 
-        $this->assertEquals($user, $manager->create('user', array('username' => 'John')));
+        $factoryManager = new FactoryManager;
+        $factoryManager->set('user', function ($values) {
+            $user = new Fixtures\User();
+            $user->setUsername($values->get('username', 'John'));
+
+            return $user;
+        });
+        $factoryManager->set('article', function ($values) {
+            $article = new Fixtures\Article();
+            $article->setTitle($values->get('title', 'The article'));
+            $article->setAuthor($values->getRelation('author', 'user'));
+
+            return $article;
+        });
+
+        $this->environment = new Environment($factoryManager, $storageManager);
     }
 
-    public function testCreateCollection()
+    public function testCreateHavingNoRelationWithoutValues()
     {
-        $users = array(
-            $foo = new \stdClass,
-            $bar = new \stdClass,
-            $baz = new \stdClass,
-            $bat = new \stdClass,
-            $ban = new \stdClass,
-        );
-        $usersIterator = new \ArrayIterator($users);
-        $factoryManager = $this->getFactoryManagerMock();
-        $factoryManager
-            ->expects($this->exactly(5))
-            ->method('get')
-            ->with($this->equalTo('user'))
-            ->will($this->returnValue(function () use ($usersIterator) {
-                $user = $usersIterator->current();
-                $usersIterator->next();
-
-                return $user;
-            }))
-        ;
-        $factoryManager
-            ->expects($this->once())
-            ->method('createContext')
-            ->will($this->returnValue(new FactoryContext($factoryManager)))
-        ;
-        $storageManager = $this->getStorageManagerMock();
-        $storageManager
-            ->expects($this->once())
-            ->method('saveAll')
-            ->with($this->equalTo($users))
-        ;
-
-        $manager = new Environment($factoryManager, $storageManager);
-
-        $this->assertEquals($users, $manager->createCollection(5, 'user', array('username' => 'John')));
+        $user = $this->environment->create('user');
+        $this->assertInstanceOf('Fixtures\Tests\Fixtures\User', $user);
+        $this->assertTrue($this->storage->hasSaved($user));
+        $this->assertEquals('John', $user->getUsername());
     }
 
-    public function getFactoryManagerMock()
+    public function testCreateHavingNoRelationWithValues()
     {
-        return $this->getMock('Fixtures\FactoryManager');
+        $user = $this->environment->create('user', array('username' => 'Herzult'));
+        $this->assertInstanceOf('Fixtures\Tests\Fixtures\User', $user);
+        $this->assertTrue($this->storage->hasSaved($user));
+        $this->assertEquals('Herzult', $user->getUsername());
     }
 
-    public function getStorageManagerMock()
+    public function testCreateHavingManyToOneRelationWithoutValues()
     {
-        return $this->getMock('Fixtures\StorageManager');
+        $article = $this->environment->create('article');
+        $this->assertInstanceOf('Fixtures\Tests\Fixtures\Article', $article);
+        $this->assertEquals('The article', $article->getTitle());
+        $savedFixtures = $this->storage->getSavedFixtures();
+        $this->assertEquals(2, count($savedFixtures));
+        $this->assertEquals($article, $savedFixtures[1]);
+        $this->assertInstanceOf('Fixtures\Tests\Fixtures\User', $savedFixtures[0]);
+        $this->assertEquals('John', $savedFixtures[0]->getUsername());
+    }
+
+    public function testCreateHavingManyToOneRelationWithValues()
+    {
+        $article = $this->environment->create('article', array(
+            'title'  => 'Some title',
+            'author' => array(
+                'username'  => 'Herzult'
+            )
+        ));
+        $this->assertInstanceOf('Fixtures\Tests\Fixtures\Article', $article);
+        $this->assertEquals('Some title', $article->getTitle());
+        $savedFixtures = $this->storage->getSavedFixtures();
+        $this->assertEquals(2, count($savedFixtures));
+        $this->assertEquals($article, $savedFixtures[1]);
+        $this->assertInstanceOf('Fixtures\Tests\Fixtures\User', $savedFixtures[0]);
+        $this->assertEquals('Herzult', $savedFixtures[0]->getUsername());
     }
 }
