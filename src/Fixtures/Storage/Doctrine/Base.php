@@ -27,15 +27,6 @@ abstract class Base implements Storage
     /**
      * {@inheritDoc}
      */
-    public function save($fixture)
-    {
-        $this->manager->persist($fixture);
-        $this->manager->flush();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function saveAll(array $fixtures)
     {
         foreach ($fixtures as $fixture) {

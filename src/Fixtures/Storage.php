@@ -19,15 +19,6 @@ interface Storage
     function supports($fixture);
 
     /**
-     * Saves the given fixture
-     *
-     * @param  object $fixture
-     *
-     * @return void
-     */
-    function save($fixture);
-
-    /**
      * Saves all the given fixtures
      *
      * @param  array An array of fixtures
@@ -37,9 +28,9 @@ interface Storage
     function saveAll(array $fixtures);
 
     /**
-     * Resets the storage, clearing all the data it contains
+     * Purges the storage, clearing all the data it contains
      *
      * @return void
      */
-    function reset();
+    function purge();
 }

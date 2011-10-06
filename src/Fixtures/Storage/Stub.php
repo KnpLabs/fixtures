@@ -10,7 +10,7 @@ class Stub implements Storage
 
     public function __construct()
     {
-        $this->reset();
+        $this->purge();
     }
 
     public function supports($fixture)
@@ -18,19 +18,14 @@ class Stub implements Storage
         return true;
     }
 
-    public function save($fixture)
-    {
-        $this->storage->attach($fixture);
-    }
-
     public function saveAll(array $fixtures)
     {
         foreach ($fixtures as $fixture) {
-            $this->save($fixture);
+            $this->storage->attach($fixture);
         }
     }
 
-    public function reset()
+    public function purge()
     {
         $this->storage = new \SplObjectStorage;
     }

@@ -24,7 +24,7 @@ class MongoDB extends Base
     /**
      * {@inheritDoc}
      */
-    public function reset()
+    public function purge()
     {
         $manager = $this->getManager();
         $classes = $manager->getMetadataFactory()->getAllMetadata();

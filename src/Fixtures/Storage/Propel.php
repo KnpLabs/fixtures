@@ -37,14 +37,6 @@ class Propel implements Storage
     /**
      * {@inheritDoc}
      */
-    public function save($fixture)
-    {
-        $fixture->save();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function saveAll(array $fixtures)
     {
         // TODO find a way to save all fixtures in a single transaction
@@ -56,7 +48,7 @@ class Propel implements Storage
     /**
      * {@inheritDoc}
      */
-    public function reset()
+    public function purge()
     {
         foreach ($this->getTableNamesToDelete() as $tableName) {
             BasePear::doDeleteAll(
