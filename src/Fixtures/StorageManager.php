@@ -19,7 +19,7 @@ class StorageManager
     public function resetAll()
     {
         foreach ($this->storages as $storage) {
-            $storage->reset();
+            $storage->purge();
         }
     }
 
