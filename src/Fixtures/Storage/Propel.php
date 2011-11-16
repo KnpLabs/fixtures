@@ -48,7 +48,7 @@ class Propel implements Storage
     /**
      * {@inheritDoc}
      */
-    public function purge()
+    public function reset()
     {
         foreach ($this->getTableNamesToDelete() as $tableName) {
             BasePear::doDeleteAll(

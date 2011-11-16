@@ -32,5 +32,5 @@ interface Storage
      *
      * @return void
      */
-    function purge();
+    function reset();
 }

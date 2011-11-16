@@ -26,7 +26,7 @@ class ORM extends Base
     /**
      * {@inheritDoc}
      */
-    public function purge()
+    public function reset()
     {
         $classes = $this->getEntityClasses();
 

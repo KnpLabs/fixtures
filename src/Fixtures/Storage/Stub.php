@@ -10,7 +10,7 @@ class Stub implements Storage
 
     public function __construct()
     {
-        $this->purge();
+        $this->reset();
     }
 
     public function supports($fixture)
@@ -25,7 +25,7 @@ class Stub implements Storage
         }
     }
 
-    public function purge()
+    public function reset()
     {
         $this->storage = new \SplObjectStorage;
     }
