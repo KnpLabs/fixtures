@@ -23,6 +23,8 @@ Let's imagine we are coding a simple blog (oh yeah).
         $article = new Blog\Model\Article();
         $article->setTitle($provider->get('title', 'The title'));
         $article->setAuthor($provider->getRelation('author', 'user'));
+        
+        return $article;
     });
 
 ### Register the storage
@@ -42,8 +44,8 @@ Let's imagine we are coding a simple blog (oh yeah).
 
     $article = $environment->create('article');
 
-    echo $article->getTitle() // prints "The title"
-    echo $article->getAuthor()->getUsername() // prints "John"
+    echo $article->getTitle(); // prints "The title"
+    echo $article->getAuthor()->getUsername(); // prints "John"
 
     $environment->reset();
 
